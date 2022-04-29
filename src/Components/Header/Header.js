@@ -52,11 +52,12 @@ function Header() {
   const inputFile = useRef(null)
   const Screenshot = () => {
     inputFile.current.click();
-    console.log(UrlData)
+    
+    
   }
 
   const Detect = () => {
-    
+    console.log(typeof(UrlData))
   }
   
   const Download = () => {

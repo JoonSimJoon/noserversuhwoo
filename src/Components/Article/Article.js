@@ -1,4 +1,4 @@
-import { useContext,useEffect, useState} from "react";
+import React,{ useContext,useEffect, useState} from "react";
 import styled from "styled-components";
 import Info from "../Info/Info";
 import Header from "../Header/Header";
@@ -72,7 +72,8 @@ function Test() {
             {rendering()}
         </ImgWrapper>
         <VideoWrapper>
-            <StyledVideo src ="video.mp4" alt="아직 영상 설정하지않음"></StyledVideo>
+            <StyledVideo>
+            </StyledVideo>
         </VideoWrapper>
     </ContentsWrapper>
     <Info/>
