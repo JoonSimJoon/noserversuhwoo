@@ -12,7 +12,9 @@ function createWindow () {
     backgroundColor: 'black',
     webPreferences: { 
       nodeIntegration: true,
-      contextIsolation : false
+      contextIsolation : false,
+      webSecurity: false
+      
     } 
   }) 
     win.loadURL(

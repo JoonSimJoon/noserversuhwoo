@@ -1,7 +1,8 @@
-import { useContext,useEffect} from "react";
+import { useContext,useEffect, useState} from "react";
 import styled from "styled-components";
 import Info from "../Info/Info";
 import Header from "../Header/Header";
+import { UrlContext } from "../../Context/UrlContext";
 
 const ContentsWrapper = styled.div`
     display: inline-flex;
@@ -50,6 +51,12 @@ function Img(props){
 }
 
 function Test() {
+    const { UrlData, SetUrlData} = useContext(UrlContext);
+    useEffect(()=>{
+        console.log(UrlData)
+
+    })
+
     const rendering = () => {
         const result = [];
         for (let i = 1; i <= 16; i++) {
@@ -65,8 +72,7 @@ function Test() {
             {rendering()}
         </ImgWrapper>
         <VideoWrapper>
-            <StyledVideo src = "og.mp4" alt="아직 영상 설정하지않음">
-            </StyledVideo>
+            <StyledVideo src ="video.mp4" alt="아직 영상 설정하지않음"></StyledVideo>
         </VideoWrapper>
     </ContentsWrapper>
     <Info/>

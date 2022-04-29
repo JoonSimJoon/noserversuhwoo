@@ -2,10 +2,14 @@
 import Article from "./Components/Article/Article";
 import Settings from "./Components/Settings/Settings";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import React from "react";
+import React, { useState } from "react";
+import {UrlContext} from "./Context/UrlContext"
+
+
 function App(props) {
+  const [ UrlData, SetUrlData ] = useState("")
   return (
-     <>
+     <UrlContext.Provider value={{UrlData , SetUrlData}}>
         <HashRouter>
               <Routes>
                 <Route path = "/" element= {<Article/>} />
@@ -13,7 +17,7 @@ function App(props) {
               </Routes>
           
         </HashRouter>   
-      </>
+      </UrlContext.Provider>
 
     
   );

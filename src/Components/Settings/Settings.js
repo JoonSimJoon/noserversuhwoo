@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import React, { useState, useContext, useEffect} from "react";
-import axios from "axios";
 import Header from "../Header/Header";
 
 const Wrapper = styled.div`
@@ -61,10 +60,8 @@ function Settings() {
   function submit() {
     console.log(Data)
   }
-
-
   function tomain(){
-    window.location.hash="/main"
+    window.location.hash="/"
   }
 
   return (

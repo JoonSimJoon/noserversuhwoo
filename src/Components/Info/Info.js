@@ -27,7 +27,6 @@ function List(props){
   const [InfoData, SetInfoData]  = useState(null);
   const data = ["작물 종류", "재배 시작", "깻잎 수량", "최대 크기", 
     "최소 크기", "평균 크기", "추수 여부"];
-  const ApiURL = "http://localhost:8888"
   useEffect(() =>  {
     console.log(Infofile)
   }, [])

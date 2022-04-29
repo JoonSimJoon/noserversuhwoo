@@ -1,8 +1,7 @@
 import styled from "styled-components";
-import React, { useState, useContext} from "react";
+import React, { useState, useContext, useRef} from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-
+import { UrlContext } from "../../Context/UrlContext";
 const StyledHeader = styled.div`
   background: #2c2c2c;
   display: flex;
@@ -49,63 +48,19 @@ const Line =styled.div`
 `
 
 function Header() {
-  const ApiURL = "http://localhost:8888"
-
-
-  const Host_server = () =>{
-    const api = axios.create({
-      baseURL: ApiURL+"/check"
-    })
-    api.get()
-    .then(function a(response) { 
-      console.log(response)
-      if (response.data===200){
-        alert("서버 연결 완료")
-      }  
-    })
-    .catch(error =>{
-      console.log(error);
-      alert("서버 연결이 불안정합니다")
-    });
+  const { UrlData, SetUrlData} = useContext(UrlContext);
+  const inputFile = useRef(null)
+  const Screenshot = () => {
+    inputFile.current.click();
+    console.log(UrlData)
   }
 
-  const screenshot = () => {
-    const api=axios.create({
-      baseURL: ApiURL+"/screenshot",
-      headers:{
-        'Content_type':'application/json'
-      }
-    })
-    api.get()
-    .then(response => {
-      console.log(response)
-    }); 
-  }
-
-  const detect = () => {
-    const api=axios.create({
-      baseURL: ApiURL+"/detect",
-      headers:{
-        'Content_type':'application/json'
-      }
-    })
-    api.get()
-    .then(response => {
-      console.log(response)
-    });
+  const Detect = () => {
+    
   }
   
   const Download = () => {
-    const api=axios.create({
-      baseURL: ApiURL+"/download",
-      headers:{
-        'Content_type':'application/json'
-      }
-    })
-    api.get()
-    .then(response => {
-      console.log(response)
-    });
+    
   }
   
   const Open_Folder = () => {
@@ -114,7 +69,7 @@ function Header() {
     input.multiple="multiple"
     input.onchange = _ => {
       // you can use this method to get file and perform respective operations
-              let files =   Array.from(input.files);
+              let files =  Array.from(input.files);
               console.log(files);
           };
     input.click();
@@ -124,19 +79,16 @@ function Header() {
       <>
         <StyledHeader>
           <ButtonWrapper>
-            <StyledDiv onClick = {Host_server}
-              onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/connection_on.png')}
-              onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/connection.png')} >
-              <Styledimg  src = "img/basic_icon/connection.png"/>
-              서버연결
-            </StyledDiv>
-            <StyledDiv onClick = {screenshot}
+            
+            <StyledDiv onClick = {Screenshot}
             onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/screenshot_on.png')}
             onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/screenshot.png')}>
               <Styledimg  src = "img/basic_icon/screenshot.png"/>
               캡쳐
             </StyledDiv>
-            <StyledDiv onClick = {detect}
+            <input type='file' id='file' ref={inputFile} onChange={(event) => SetUrlData(event.target.value)} style={{display: 'none'}} accept="video/mp4,video/mkv, video/x-m4v,video/*"/>
+
+            <StyledDiv onClick = {Detect}
             onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/analysis_on.png')}
             onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/analysis.png')}>
               <Styledimg  src = "img/basic_icon/analysis.png"/>
