@@ -2,6 +2,8 @@ import styled from "styled-components";
 import React, { useState, useContext, useRef} from "react";
 import { Link } from "react-router-dom";
 import { UrlContext } from "../../Context/UrlContext";
+
+
 const StyledHeader = styled.div`
   background: #2c2c2c;
   display: flex;
