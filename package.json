@@ -16,9 +16,11 @@
     "http-proxy-middleware": "^2.0.3",
     "mobx": "^6.4.1",
     "mobx-react": "^7.3.0",
+    "path-browserify": "^1.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-image-button": "^1.0.6",
+    "react-player": "^2.10.0",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.2.1",
     "react-scripts": "^5.0.1",
@@ -70,5 +72,10 @@
     "directories": {
       "buildResources": "assets"
     }
+  },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
   }
 }

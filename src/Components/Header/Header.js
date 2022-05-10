@@ -3,7 +3,6 @@ import React, { useState, useContext, useRef} from "react";
 import { Link } from "react-router-dom";
 import { UrlContext } from "../../Context/UrlContext";
 
-
 const StyledHeader = styled.div`
   background: #2c2c2c;
   display: flex;
@@ -55,11 +54,10 @@ function Header() {
   const Screenshot = () => {
     inputFile.current.click();
     
-    
   }
 
   const Detect = () => {
-    console.log(typeof(UrlData))
+    console.log((UrlData),process.env.PUBLIC_URL)
   }
   
   const Download = () => {
@@ -89,7 +87,7 @@ function Header() {
               <Styledimg  src = "img/basic_icon/screenshot.png"/>
               캡쳐
             </StyledDiv>
-            <input type='file' id='file' ref={inputFile} onChange={(event) => SetUrlData(event.target.value)} style={{display: 'none'}} accept="video/mp4,video/mkv, video/x-m4v,video/*"/>
+            <input type='file' id='file' ref={inputFile} onChange={(event) => SetUrlData(URL.createObjectURL(event.target.files[0]))} style={{display: 'none'}} accept="video/mp4,video/mkv, video/x-m4v,video/*"/>
 
             <StyledDiv onClick = {Detect}
             onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/analysis_on.png')}

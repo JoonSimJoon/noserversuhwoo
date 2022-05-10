@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Info from "../Info/Info";
 import Header from "../Header/Header";
 import { UrlContext } from "../../Context/UrlContext";
+import ReactPlayer from "react-player";
 
 const ContentsWrapper = styled.div`
     display: inline-flex;
@@ -72,8 +73,7 @@ function Test() {
             {rendering()}
         </ImgWrapper>
         <VideoWrapper>
-            <StyledVideo>
-            </StyledVideo>
+            <ReactPlayer url={UrlData} width="100%" height="100%" controls={true} />
         </VideoWrapper>
     </ContentsWrapper>
     <Info/>
