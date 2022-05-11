@@ -3563,10 +3563,10 @@
     "readable-stream" "^2.2.2"
     "typedarray" "^0.0.6"
 
-"concurrently@^7.0.0":
-  "integrity" "sha512-WKM7PUsI8wyXpF80H+zjHP32fsgsHNQfPLw/e70Z5dYkV7hF+rf8q3D+ScWJIEr57CpkO3OWBko6hwhQLPR8Pw=="
-  "resolved" "https://registry.npmjs.org/concurrently/-/concurrently-7.0.0.tgz"
-  "version" "7.0.0"
+"concurrently@^7.1.0":
+  "integrity" "sha512-Bz0tMlYKZRUDqJlNiF/OImojMB9ruKUz6GCfmhFnSapXgPe+3xzY4byqoKG9tUZ7L2PGEUjfLPOLfIX3labnmw=="
+  "resolved" "https://registry.npmjs.org/concurrently/-/concurrently-7.1.0.tgz"
+  "version" "7.1.0"
   dependencies:
     "chalk" "^4.1.0"
     "date-fns" "^2.16.1"
@@ -4836,7 +4836,7 @@
     "jest-matcher-utils" "^27.5.1"
     "jest-message-util" "^27.5.1"
 
-"express@^4.17.3":
+"express@^4.17.3", "express@^4.18.1":
   "integrity" "sha512-zZBcOX9TfehHQhtupq57OF8lFZ3UZi08Y97dwFCkD8p9d/d2Y3M+ykKcwaMDEL+4qyUolgBDX6AblpR3fL212Q=="
   "resolved" "https://registry.npmjs.org/express/-/express-4.18.1.tgz"
   "version" "4.18.1"

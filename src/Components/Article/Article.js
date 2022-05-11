@@ -28,7 +28,7 @@ const VideoWrapper = styled.div`
     border: 2px solid black;
 `
 
-const StyledImg = styled.img`
+const StyledImg = styled.canvas`
     display: inline-flex;
     width: 20%;
     height: 20%;
@@ -41,33 +41,37 @@ const StyledVideo = styled.video`
     height 100%;
 `
 
-function Img(props){
-    const imgname = "img/"+props.k+".png"
-    function check(){
-        console.log(imgname)
-    }
-    return(
-        <StyledImg onClick={check} src={imgname} alt={props.k + "번 프레임 아직 설정하지않음"}></StyledImg>
-    );
-}
 
-function Test() {
+
+function Article() {
     const { UrlData, SetUrlData} = useContext(UrlContext);
-    useEffect(()=>{
-        console.log(UrlData)
-
-    })
-
+    
+    const result = [];
+    
+    function Img(props){
+        function check(){
+            console.log(props.k)
+        }
+        return(
+            <StyledImg onClick={check} ></StyledImg>
+        );
+    }
+    function Getimg(){
+        const frameRate = 16;
+        console.log(result)
+        for (let i =1;i<=16;i++){
+            result[i].drawImage()
+        }
+    }
     const rendering = () => {
-        const result = [];
         for (let i = 1; i <= 16; i++) {
           result.push(<Img k={i}></Img>);
         }
         return result;
       };
-  return (
+    return (
       <>
-      <Header/>
+      <Header Getimg={Getimg}/>
       <ContentsWrapper>
         <ImgWrapper>
             {rendering()}
@@ -75,12 +79,12 @@ function Test() {
         <VideoWrapper>
             <ReactPlayer url={UrlData} width="100%" height="100%" controls={true} />
         </VideoWrapper>
-    </ContentsWrapper>
-    <Info/>
+       </ContentsWrapper>
+        <Info/>
       </>
     
   );
 }
   
-export default Test;
+export default Article;
   

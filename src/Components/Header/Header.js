@@ -48,7 +48,7 @@ const Line =styled.div`
   margin-right: 20px; 
 `
 
-function Header() {
+function Header(props) {
   const { UrlData, SetUrlData} = useContext(UrlContext);
   const inputFile = useRef(null)
   const Screenshot = () => {
@@ -57,7 +57,8 @@ function Header() {
   }
 
   const Detect = () => {
-    console.log((UrlData),process.env.PUBLIC_URL)
+    props.Getimg();
+
   }
   
   const Download = () => {
