@@ -59,9 +59,7 @@ function Article() {
     function Getimg(){
         const frameRate = 16;
         console.log(result)
-        for (let i =1;i<=16;i++){
-            result[i].drawImage()
-        }
+        
     }
     const rendering = () => {
         for (let i = 1; i <= 16; i++) {
