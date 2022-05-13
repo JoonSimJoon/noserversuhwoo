@@ -1,9 +1,10 @@
-import React,{ useContext,useEffect, useState} from "react";
+import React,{ useContext,useEffect, useState, useRef} from "react";
 import styled from "styled-components";
 import Info from "../Info/Info";
 import Header from "../Header/Header";
 import { UrlContext } from "../../Context/UrlContext";
 import ReactPlayer from "react-player";
+import VideoSnapshot from 'video-snapshot';
 
 const ContentsWrapper = styled.div`
     display: inline-flex;
@@ -47,23 +48,27 @@ function Article() {
     const { UrlData, SetUrlData} = useContext(UrlContext);
     
     const result = [];
-    
+    const result_ref = useRef([]);
+    const video_ref = useRef([]);
+
     function Img(props){
         function check(){
             console.log(props.k)
         }
         return(
-            <StyledImg onClick={check} ></StyledImg>
+            <StyledImg ref = {el => (result_ref.current[props.k-1] = el)} onClick={check} ></StyledImg>
         );
     }
-    function Getimg(){
+    const Getimg = async () => {
         const frameRate = 16;
-        console.log(result)
-        
+        console.log(video_ref.current.props.url)
+        const snapshoter = new VideoSnapshot(video_ref.current.props.url);
+        const previewSrc = await snapshoter.takeSnapshot();
+        result_ref.current[1].src = previewSrc
     }
     const rendering = () => {
         for (let i = 1; i <= 16; i++) {
-          result.push(<Img k={i}></Img>);
+          result.push(<Img k={i} ></Img>);
         }
         return result;
       };
@@ -75,7 +80,7 @@ function Article() {
             {rendering()}
         </ImgWrapper>
         <VideoWrapper>
-            <ReactPlayer url={UrlData} width="100%" height="100%" controls={true} />
+            <ReactPlayer ref = {video_ref} url={UrlData} width="100%" height="100%" controls={true} />
         </VideoWrapper>
        </ContentsWrapper>
         <Info/>
