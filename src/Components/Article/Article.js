@@ -60,11 +60,17 @@ function Article() {
         );
     }
     const Getimg = async () => {
-        const frameRate = 16;
-        console.log(video_ref.current.props.url)
-        const snapshoter = new VideoSnapshot(video_ref.current.props.url);
-        const previewSrc = await snapshoter.takeSnapshot();
-        result_ref.current[1].src = previewSrc
+        try {
+            
+            const frameRate = 16;
+            console.log(video_ref.current.props.url);
+            const snapshoter = new VideoSnapshot(video_ref.current.props.url);
+            console.log()
+            const previewSrc = await snapshoter.takeSnapshot();
+            result_ref.current[1].src = previewSrc
+        } catch (error) {
+         alert(error.message)   
+        }
     }
     const rendering = () => {
         for (let i = 1; i <= 16; i++) {
