@@ -88,7 +88,7 @@ function Header(props) {
               <Styledimg  src = "img/basic_icon/screenshot.png"/>
               캡쳐
             </StyledDiv>
-            <input type='file' id='file' ref={inputFile} onChange={(event) => SetUrlData(URL.createObjectURL(event.target.files[0]))} style={{display: 'none'}} accept="video/mp4,video/mkv, video/x-m4v,video/*"/>
+            <input type='file' id='file' ref={inputFile} onChange={(event) => SetUrlData((event.target.files[0]))} style={{display: 'none'}} accept="video/mp4,video/mkv, video/x-m4v,video/*"/>
 
             <StyledDiv onClick = {Detect}
             onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/analysis_on.png')}
