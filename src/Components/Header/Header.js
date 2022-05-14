@@ -51,13 +51,17 @@ const Line =styled.div`
 function Header(props) {
   const { UrlData, SetUrlData} = useContext(UrlContext);
   const inputFile = useRef(null)
-  const Screenshot = () => {
+  const Connection = () => {
     inputFile.current.click();
+  }
+
+  const Screenshot = () => {
+    props.Getimg();
     
   }
 
   const Detect = () => {
-    props.Getimg();
+    props.Predict();
 
   }
   
@@ -81,7 +85,12 @@ function Header(props) {
       <>
         <StyledHeader>
           <ButtonWrapper>
-            
+          <StyledDiv onClick={Connection}
+              onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/connection_on.png')}
+              onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/connection.png')} >
+              <Styledimg  src = "img/basic_icon/connection.png"/>
+              서버연결
+            </StyledDiv>
             <StyledDiv onClick = {Screenshot}
             onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/screenshot_on.png')}
             onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/screenshot.png')}>

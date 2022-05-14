@@ -5,7 +5,9 @@ import Header from "../Header/Header";
 import { UrlContext } from "../../Context/UrlContext";
 import ReactPlayer from "react-player";
 import VideoSnapshot from 'video-snapshot';
-import { buildTimeValue } from "@testing-library/user-event/dist/utils";
+import * as tf from '@tensorflow/tfjs';
+import {loadGraphModel} from '@tensorflow/tfjs-converter';
+import { mod } from "@tensorflow/tfjs";
 
 const ContentsWrapper = styled.div`
     display: inline-flex;
@@ -23,7 +25,7 @@ const ImgWrapper = styled.div`
     border: 2px solid black;
     overflow:hidden;
     text-align:center;
-     margin-left:10px;
+    margin-left:10px;
 `
 
 const VideoWrapper = styled.div`
@@ -45,7 +47,7 @@ const StyledVideo = styled.video`
     width: 100%;
     height 100%;
 `
-
+const ModelUrl = "./tfjs_model/model.json"
 
 
 function Article() {
@@ -67,9 +69,23 @@ function Article() {
             <StyledImg ref = {el => (result_ref.current[props.k-1] = el)} onClick={check}  alt={props.k + "번 프레임 아직 설정하지않음"}></StyledImg>
         );
     }
+    const Predict = async () =>{
+        class L2 {
+            static className = 'L2';
+        
+            constructor(config) {
+               return tf.regularizers.l1l2(config)
+            }
+        }
+        tf.serialization.registerClass(L2);
+        const model = await tf.loadGraphModel(ModelUrl);
+        const prediction = model.predict((result_ref.current[1].src));
+        console.log(prediction)
+    }
+
     const Getimg = async () => {
         try {
-            const frameRate = 1;
+            const frameRate = 1/8;
             const snapshoter = new VideoSnapshot(UrlData);
             var currentTime = video_ref.current.getCurrentTime();
                 
@@ -92,7 +108,7 @@ function Article() {
       };
     return (
       <>
-      <Header Getimg={Getimg}/>
+      <Header Getimg={Getimg} Predict={Predict}/>
       <ContentsWrapper>
         <ImgWrapper>
             {rendering()}
