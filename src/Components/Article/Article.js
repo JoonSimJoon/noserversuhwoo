@@ -47,8 +47,8 @@ const StyledVideo = styled.video`
     width: 100%;
     height 100%;
 `
-const ModelUrl = "./tfjs_model/model.json"
-
+//const ModelUrl = "./tfjs_model/model.json"
+const ModelUrl = "https://tensorflowjsrealtimemodel.s3.au-syd.cloud-object-storage.appdomain.cloud/model.json"
 
 function Article() {
     const { UrlData, SetUrlData} = useContext(UrlContext);
@@ -78,9 +78,8 @@ function Article() {
             }
         }
         tf.serialization.registerClass(L2);
-        const model = await tf.loadGraphModel(ModelUrl);
-        const prediction = model.predict((result_ref.current[1].src));
-        console.log(prediction)
+        const model = await tf.loadLayersModel(ModelUrl);
+       
     }
 
     const Getimg = async () => {
