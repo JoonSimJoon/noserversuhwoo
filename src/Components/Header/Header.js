@@ -66,7 +66,7 @@ function Header(props) {
   }
   
   const Download = () => {
-    
+    props.Download();
   }
   
   const Open_Folder = () => {

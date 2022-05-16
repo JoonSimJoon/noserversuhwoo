@@ -8,6 +8,7 @@ import VideoSnapshot from 'video-snapshot';
 import * as tf from '@tensorflow/tfjs';
 import {loadGraphModel} from '@tensorflow/tfjs-converter';
 import { mod } from "@tensorflow/tfjs";
+import fileDownload from "js-file-download";
 
 const ContentsWrapper = styled.div`
     display: inline-flex;
@@ -78,8 +79,7 @@ function Article() {
             }
         }
         tf.serialization.registerClass(L2);
-        const model = await tf.loadLayersModel(ModelUrl);
-       
+        const model = await tf.loadLayersModel(ModelUrl);  
     }
 
     const Getimg = async () => {
@@ -99,6 +99,15 @@ function Article() {
          alert(error.message)   
         }
     }
+    const Download = () =>{
+        const link = document.createElement('a');
+
+        link.href = result_ref.current[1].src;
+        link.download = `preview.jpg`;
+        document.body.appendChild(link);
+        link.click();
+    }
+
     const rendering = () => {
         for (let i = 1; i <= 16; i++) {
           result.push(<Img k={i} ></Img>);
@@ -107,7 +116,7 @@ function Article() {
       };
     return (
       <>
-      <Header Getimg={Getimg} Predict={Predict}/>
+      <Header Getimg={Getimg} Predict={Predict} Download={Download}/>
       <ContentsWrapper>
         <ImgWrapper>
             {rendering()}
