@@ -49,7 +49,7 @@ const StyledVideo = styled.video`
     height 100%;
 `
 //const ModelUrl = "./tfjs_model/model.json"
-const ModelUrl = "https://tensorflowjsrealtimemodel.s3.au-syd.cloud-object-storage.appdomain.cloud/model.json"
+//const ModelUrl = "https://tensorflowjsrealtimemodel.s3.au-syd.cloud-object-storage.appdomain.cloud/model.json"
 
 function Article() {
     const { UrlData, SetUrlData} = useContext(UrlContext);
