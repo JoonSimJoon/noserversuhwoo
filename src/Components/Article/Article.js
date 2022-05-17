@@ -5,10 +5,9 @@ import Header from "../Header/Header";
 import { UrlContext } from "../../Context/UrlContext";
 import ReactPlayer from "react-player";
 import VideoSnapshot from 'video-snapshot';
-import * as tf from '@tensorflow/tfjs';
-import {loadGraphModel} from '@tensorflow/tfjs-converter';
-import { mod } from "@tensorflow/tfjs";
 import fileDownload from "js-file-download";
+import yolo, { downloadModel } from 'tfjs-yolo-tiny'
+
 
 const ContentsWrapper = styled.div`
     display: inline-flex;
@@ -50,6 +49,7 @@ const StyledVideo = styled.video`
 `
 //const ModelUrl = "./tfjs_model/model.json"
 //const ModelUrl = "https://tensorflowjsrealtimemodel.s3.au-syd.cloud-object-storage.appdomain.cloud/model.json"
+const ModelUrl = "./yolo_weights/yolov4-tiny.weights"
 
 function Article() {
     const { UrlData, SetUrlData} = useContext(UrlContext);
@@ -71,16 +71,16 @@ function Article() {
         );
     }
     const Predict = async () =>{
-        class L2 {
-            static className = 'L2';
-        
-            constructor(config) {
-               return tf.regularizers.l1l2(config)
-            }
+        console.log("p")
+        try{
+            const model = await downloadModel();
+            const boxes = await yolo(result_ref.current[1].src,model)
         }
-        tf.serialization.registerClass(L2);
-        const model = await tf.loadLayersModel(ModelUrl);  
+        catch(e){
+            console.log(e.message)
+        }
     }
+
 
     const Getimg = async () => {
         try {
