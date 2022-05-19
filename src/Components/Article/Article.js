@@ -5,9 +5,7 @@ import Header from "../Header/Header";
 import { UrlContext } from "../../Context/UrlContext";
 import ReactPlayer from "react-player";
 import VideoSnapshot from 'video-snapshot';
-import fileDownload from "js-file-download";
-import yolo, { downloadModel } from 'tfjs-yolo-tiny'
-
+import * as tf from "@tensorflow/tfjs"
 
 const ContentsWrapper = styled.div`
     display: inline-flex;
@@ -49,7 +47,7 @@ const StyledVideo = styled.video`
 `
 //const ModelUrl = "./tfjs_model/model.json"
 //const ModelUrl = "https://tensorflowjsrealtimemodel.s3.au-syd.cloud-object-storage.appdomain.cloud/model.json"
-const ModelUrl = "./yolo_weights/yolov4-tiny.weights"
+const ModelUrl = "./tfjs_tiny/model.json"
 
 function Article() {
     const { UrlData, SetUrlData} = useContext(UrlContext);
@@ -71,14 +69,7 @@ function Article() {
         );
     }
     const Predict = async () =>{
-        console.log("p")
-        try{
-            const model = await downloadModel();
-            const boxes = await yolo(result_ref.current[1].src,model)
-        }
-        catch(e){
-            console.log(e.message)
-        }
+
     }
 
 
