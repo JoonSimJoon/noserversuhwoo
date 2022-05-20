@@ -6,6 +6,7 @@
   "allowedHosts": "all",
   "homepage": "./",
   "dependencies": {
+    "@microsoft/customvision-tfjs": "^1.3.0",
     "@tensorflow/tfjs": "^3.17.0",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
