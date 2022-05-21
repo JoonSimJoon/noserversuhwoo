@@ -58,7 +58,8 @@ function Article() {
     let model;
     let tensor;
     let newArray;
-    
+    let box_array =[]
+    let bboxes =[]
     useEffect(()=>{
         UrlData != "" ? SetBlub(URL.createObjectURL(UrlData)) : SetBlub(Blub);
         console.log(UrlData, Blub)
@@ -86,6 +87,10 @@ function Article() {
             <StyledImg ref = {el => (result_ref.current[props.k-1] = el)} onClick={check}  alt={props.k + "번 프레임 아직 설정하지않음"}></StyledImg>
         );
     }
+    function getMethods(o) {
+        return Object.getOwnPropertyNames(Object.getPrototypeOf(o))
+            .filter(m => 'function' === typeof o[m]);
+    }
 
     async function Predict(){
         console.log( "Loading model..." );
@@ -97,20 +102,41 @@ function Article() {
         tensor = await tf.browser.fromPixels(result_ref.current[1])
         console.log("Img loaded")
         let shapev = tensor.shape
+        let width = result_ref.current[1].width;
+        let height = result_ref.current[1].height;
         if(shapev.length==3){
             newArray = [1].concat(shapev);
         }else{
             newArray = shapev;
         }
         tensor = tensor.reshape(newArray)
+
         const outputs = await model.executeAsync(tensor);
-        console.log( "Post processing...");
-        for (const output of outputs) {
-            const predict_data = output.dataSync();
-            console.log(predict_data);
+        const arrays = !Array.isArray(outputs) ? outputs.array() : Promise.all(outputs.map(t => t.array()));
+        let predictions = await arrays;
+        const objectnum = predictions[5];
+        for(let i=0;i<objectnum;i++){
+            if(predictions[4][0][i]<0.2){
+                continue;
+            } 
+            let box =[];
+            box.push(predictions[1][0][i]);
+            box.push(predictions[4][0][i]);
+            box.push(predictions[2][0][i]);
+            box_array.push(box);
+
+            let bbox =[];
+            bbox.push(width*predictions[1][0][i][0]);
+            bbox.push(height*predictions[1][0][i][1]);
+            bbox.push(width*(predictions[1][0][i][2]-predictions[1][0][i][0]));
+            bbox.push(height*(predictions[1][0][i][3]-predictions[1][0][i][1]));
+            bboxes.push(bbox)
         }
-        
-		
+        console.log(bboxes)
+        // x,y,width,height
+        // x = 
+
+
     }
 
     const Getimg = async () => {
