@@ -110,14 +110,13 @@ function Article() {
         const outputs = await model.executeAsync(tensor, is_new_od_model ? NEW_OD_OUTPUT_TENSORS : null);
         const arrays = !Array.isArray(outputs) ? outputs.array() : Promise.all(outputs.map(t => t.array()));
 	    let predictions = await arrays;
-
-        console.log( "Post processing...", predictions);
+        console.log( "Post processing...",predictions);
 		const num_anchor = ANCHORS.length / 2;
 		const channels = predictions[0][0][0].length;
 		const height = predictions[0].length;
 		const width = predictions[0][0].length;
-
 		const num_class = channels / num_anchor - 5;
+        console.log(channels,num_anchor,num_class,predictions[0]);
 
 		let boxes = [];
 		let scores = [];
@@ -134,7 +133,8 @@ function Article() {
 					let h = Math.exp(predictions[0][grid_y][grid_x][offset++]) * ANCHORS[i * 2 + 1] / height;
 
 					let objectness = tf.scalar(_logistic(predictions[0][grid_y][grid_x][offset++]));
-                    let no = predictions[0][grid_y][grid_x].slice(offset, offset + num_class)
+                    let no = Array.from(predictions[0][grid_y][grid_x]).slice(offset, offset + num_class);
+                    //console.log(offset, offset + num_class ,num_class, no)
 					let class_probabilities = tf.tensor1d( no ).softmax();
 					offset += num_class;
 
