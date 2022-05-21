@@ -112,11 +112,11 @@ function Article() {
 	    let predictions = await arrays;
         console.log( "Post processing...",predictions);
 		const num_anchor = ANCHORS.length / 2;
-		const channels = predictions[0][0][0].length;
-		const height = predictions[0].length;
-		const width = predictions[0][0].length;
+		const channels = predictions[0][0].length;
+		const height = predictions.length;
+		const width = predictions[0].length;
 		const num_class = channels / num_anchor - 5;
-        console.log(channels,num_anchor,num_class,predictions[0]);
+        console.log(channels,num_anchor,num_class,predictions);
 
 		let boxes = [];
 		let scores = [];
@@ -127,15 +127,16 @@ function Article() {
 				let offset = 0;
 
 				for (var i = 0; i < num_anchor; i++) {
-					let x = (_logistic(predictions[0][grid_y][grid_x][offset++]) + grid_x) / width;
-					let y = (_logistic(predictions[0][grid_y][grid_x][offset++]) + grid_y) / height;
-					let w = Math.exp(predictions[0][grid_y][grid_x][offset++]) * ANCHORS[i * 2] / width;
-					let h = Math.exp(predictions[0][grid_y][grid_x][offset++]) * ANCHORS[i * 2 + 1] / height;
+					let x = (_logistic(predictions[grid_y][grid_x][offset++]) + grid_x) / width;
+					let y = (_logistic(predictions[grid_y][grid_x][offset++]) + grid_y) / height;
+					let w = Math.exp(predictions[grid_y][grid_x][offset++]) * ANCHORS[i * 2] / width;
+					let h = Math.exp(predictions[grid_y][grid_x][offset++]) * ANCHORS[i * 2 + 1] / height;
 
-					let objectness = tf.scalar(_logistic(predictions[0][grid_y][grid_x][offset++]));
-                    let no = Array.from(predictions[0][grid_y][grid_x]).slice(offset, offset + num_class);
+					let objectness = tf.scalar(_logistic(predictions[grid_y][grid_x][offset++]));
+                    let no = Array.from(predictions[grid_y][grid_x]).slice(offset, offset + num_class);
                     //console.log(offset, offset + num_class ,num_class, no)
-					let class_probabilities = tf.tensor1d( no ).softmax();
+                    console.log(no)
+					let class_probabilities = tf.tensor1d(no).softmax();
 					offset += num_class;
 
 					class_probabilities = class_probabilities.mul(objectness);
