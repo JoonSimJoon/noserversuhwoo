@@ -58,8 +58,6 @@ function Article() {
     let model;
     let tensor;
     let newArray;
-    let box_array =[]
-    let bboxes =[]
     useEffect(()=>{
         UrlData != "" ? SetBlub(URL.createObjectURL(UrlData)) : SetBlub(Blub);
         console.log(UrlData, Blub)
@@ -93,9 +91,10 @@ function Article() {
     }
 
     async function Predict(){
+        let box_array =[]
+        let bboxes =[]
         console.log( "Loading model..." );
         model = await tf.loadGraphModel(ModelUrl, {onProgress: showProgress});
-        const is_new_od_model = model.inputs.length == 3;
         console.log( "Model loaded.");
         
         console.log("Loading IMG...")
@@ -132,7 +131,7 @@ function Article() {
             bbox.push(height*(predictions[1][0][i][3]-predictions[1][0][i][1]));
             bboxes.push(bbox)
         }
-        console.log(bboxes)
+        console.log(box_array, bboxes)
         // x,y,width,height
         // x = 
 
