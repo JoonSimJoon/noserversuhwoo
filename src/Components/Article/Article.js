@@ -77,14 +77,14 @@ function Article() {
     function canvas_download(props){
         console.log(props + "canvas_downloading..")
         var canvas = canvasRef.current[props];
-        var url = canvas.toDataURL("image/jpg");
+        var url = canvas.toDataURL("image/png");
         var link = document.createElement('a');
         link.download = 'detected.jpg';
         link.href = url;
         link.click();
       }
     function img_download(props){
-        console.log(props + "canvas_downloading..")
+        console.log(props + "img_downloading..")
         var link = document.createElement('a');
         link.download = 'filename.jpg';
         link.href = result_ref.current[props].src;
@@ -105,11 +105,33 @@ function Article() {
         console.log( "Loading model..." );
         model = await tf.loadGraphModel(ModelUrl, {onProgress: showProgress});
         console.log( "Model loaded.");
-        for(let k=0;k<16;k++){
+        for(let k=0;k<1;k++){
             let box_array =[]
             let bboxes =[]
             let newArray;
             console.log("Loading IMG...")
+            
+            
+            result_ref.current[k].src = "./img/lettuce.jpg";
+            result_ref.current[k].onload  = function(){
+                    
+                var img = new Image();
+                img.src = result_ref.current[k].src;
+                img.onload = function()
+                {
+                    vwidth = this.width;
+                    vheight = this. height;
+                    canvasRef.current[k].width = this.width;
+                    canvasRef.current[k].height =  this.height;
+                    //console.log("Width: "+this.width+" Height: "+this.height);
+                    const ctx = canvasRef.current[k].getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+                }
+                
+                img.remove();
+            }
+
+
             tensor = await tf.browser.fromPixels(result_ref.current[k])
             console.log("Img loaded")
             let shapev = tensor.shape
