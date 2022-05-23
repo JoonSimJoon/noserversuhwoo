@@ -112,7 +112,6 @@ function Article() {
             console.log("Loading IMG...")
             
             
-            result_ref.current[k].src = "./img/lettuce.jpg";
             result_ref.current[k].onload  = function(){
                     
                 var img = new Image();
