@@ -7,6 +7,7 @@ import ReactPlayer from "react-player";
 import VideoSnapshot from 'video-snapshot';
 import * as tf from "@tensorflow/tfjs"
 import JSZip from "jszip";
+import { string } from "@tensorflow/tfjs";
 
 const ContentsWrapper = styled.div`
     display: inline-flex;
@@ -111,7 +112,8 @@ function Article() {
             let newArray;
             console.log("Loading IMG...")
             
-            
+
+
             result_ref.current[k].onload  = function(){
                     
                 var img = new Image();
@@ -146,7 +148,7 @@ function Article() {
             let predictions = await arrays;
             const objectnum = predictions[5];
             for(let i=0;i<objectnum;i++){
-                if(predictions[4][0][i]<0.2 || predictions[2][0][i]==2){
+                if(predictions[4][0][i]<0.1 || predictions[2][0][i]==2){
                     continue;
                 } 
                 let box =[];
@@ -183,7 +185,7 @@ function Article() {
                 ctx.strokeStyle = '#' + color
                 ctx.font = '40px Arial';
                 console.log(ctx.lineWidth)
-                ctx.lineWidth = 15;
+                ctx.lineWidth = 3;
                 // Draw rectangles and text
                 ctx.beginPath();   
                 ctx.fillStyle = '#' + color
@@ -202,11 +204,12 @@ function Article() {
             const snapshoter = new VideoSnapshot(UrlData);
             var currentTime = video_ref.current.getCurrentTime();
             for (let i = 1; i <= 16; i++) {
-                console.log(currentTime, i-1)
-                const previewSrc = await snapshoter.takeSnapshot(currentTime);
+                //console.log(currentTime, i-1)
+                //const previewSrc = await snapshoter.takeSnapshot(currentTime);
 
-                result_ref.current[i-1].src = previewSrc;
-                
+                //result_ref.current[i-1].src = previewSrc;
+                result_ref.current[i-1].src = ("./predict/"+i+".jpg");
+
                 result_ref.current[i-1].onload  = function(){
                     
                     var img = new Image();
