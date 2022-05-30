@@ -50,7 +50,8 @@ const StyledCanvas = styled.canvas`
 const ShowCanvas = styled.canvas`
     float:left;
     margin 0.6% 2%;
-    position: absolute;
+    height: 90%; 
+    width: auto;
 `
 //display: none;
 
@@ -135,10 +136,7 @@ function Article() {
             img.src = result_ref.current[ImgNum-1].src;
             img.onload = function()
             {
-                vwidth = this.width;
-                vheight = this. height;
-                show_ref.current.width = this.width;
-                show_ref.current.height =  this.height;
+               
                 //console.log("Width: "+this.width+" Height: "+this.height);
                 const ctx = show_ref.current.getContext("2d");
                 ctx.drawImage(img, 0, 0);
@@ -230,7 +228,7 @@ function Article() {
             let predictions = await arrays;
             const objectnum = predictions[5];
             for(let i=0;i<objectnum;i++){
-                if(predictions[4][0][i]<0.4 || predictions[2][0][i]==2){
+                if(predictions[4][0][i]<0.4){
                     continue;
                 } 
                 let box =[];
@@ -249,6 +247,7 @@ function Article() {
                 bbox.push(vwidth*(predictions[1][0][i][3]-predictions[1][0][i][1]));
                 bbox.push(vheight*(predictions[1][0][i][2]-predictions[1][0][i][0]));
                 bbox.push(Math.floor(predictions[4][0][i]*100))
+                bbox.push(predictions[2][0][i])
                 bboxes.push(bbox)
             }
             boxarrayes.push(box_array)
@@ -257,18 +256,20 @@ function Article() {
             // x = 
             canvasRef.current[k].src = result_ref.current[k].src;
             const ctx = canvasRef.current[k ].getContext("2d");
+            //ctx.clearRect(0, 0, canvasRef.current[k].width, canvasRef.current[k].height);
+
             bboxes.forEach(prediction => {
     
                 // Extract boxes and classes
-                const [x, y, width, height, score] = prediction; 
-                const text = score; 
+                const [x, y, width, height, score, object] = prediction; 
+                const text = String(score) + String(object); 
             
                 // Set styling
                 const color = Math.floor(Math.random()*16777215).toString(16);
                 ctx.strokeStyle = '#' + color
                 ctx.font = '40px Arial';
                 console.log(ctx.lineWidth)
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 5;
                 // Draw rectangles and text
                 ctx.beginPath();   
                 ctx.fillStyle = '#' + color
