@@ -51,14 +51,14 @@ const Line =styled.div`
 function Header(props) {
   const { UrlData, SetUrlData} = useContext(UrlContext);
   const inputFile = useRef(null)
-  const Connection = () => {
-    inputFile.current.click();
+  async function Connection (){
+    
+    await inputFile.current.click();
+    //await props.Getimg();
+   
   }
 
-  const Screenshot = () => {
-    props.Getimg();
-    
-  }
+
 
   const Detect = () => {
     props.Predict();
@@ -68,36 +68,25 @@ function Header(props) {
   const Download = () => {
     props.Download();
   }
-  
-  const Open_Folder = () => {
-    let input = document.createElement('input');
-    input.type = 'file';
-    input.multiple="multiple"
-    input.onchange = _ => {
-      // you can use this method to get file and perform respective operations
-              let files =  Array.from(input.files);
-              console.log(files);
-          };
-    input.click();
+
+  const Predict_Download = () => {
+    props.Predict_Download();
   }
+  
+
 
     return (
       <>
         <StyledHeader>
           <ButtonWrapper>
           <StyledDiv onClick={Connection}
-              onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/connection_on.png')}
-              onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/connection.png')} >
-              <Styledimg  src = "img/basic_icon/connection.png"/>
-              서버연결
+              onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/import_on.png')}
+              onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/import.png')}>
+                <Styledimg  src="img/basic_icon/import.png"/>
+                불러오기
             </StyledDiv>
-            <StyledDiv onClick = {Screenshot}
-            onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/screenshot_on.png')}
-            onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/screenshot.png')}>
-              <Styledimg  src = "img/basic_icon/screenshot.png"/>
-              캡쳐
-            </StyledDiv>
-            <input type='file' id='file' ref={inputFile} onChange={(event) => SetUrlData((event.target.files[0]))} style={{display: 'none'}} accept="video/mp4,video/mkv, video/x-m4v,video/*"/>
+            
+            <input type='file' id='file' ref={inputFile} onChange={(event) => SetUrlData((event.target.files))} style={{display: 'none'}} accept="image/*" multiple/>
 
             <StyledDiv onClick = {Detect}
             onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/analysis_on.png')}
@@ -105,19 +94,22 @@ function Header(props) {
               <Styledimg  src = "img/basic_icon/analysis.png"/>
               분석
             </StyledDiv>
+            
+            <Line/>
             <StyledDiv onClick = {Download}
             onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/save_on.png')}
             onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/save.png')}>
               <Styledimg  src = "img/basic_icon/save.png"/>
-              저장
+              원본저장
             </StyledDiv>
-            <Line/>
-            <StyledDiv onClick={Open_Folder}
-            onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/import_on.png')}
-            onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/import.png')}>
-              <Styledimg  src="img/basic_icon/import.png"/>
-              불러오기
+
+            <StyledDiv onClick = {Predict_Download}
+            onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/save_on.png')}
+            onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/save.png')}>
+              <Styledimg  src = "img/basic_icon/save.png"/>
+              분석저장
             </StyledDiv>
+
             <Line/>
             <Link to="/settings">
               <StyledDiv
@@ -127,6 +119,7 @@ function Header(props) {
                 설정
               </StyledDiv>
             </Link>
+            
           </ButtonWrapper>
           <Logo src="img/icon.png" ></Logo>
         </StyledHeader>

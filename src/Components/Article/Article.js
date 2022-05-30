@@ -1,17 +1,15 @@
 import React,{ useContext,useEffect, useState, useRef, useReducer} from "react";
 import styled from "styled-components";
-import Info from "../Info/Info";
 import Header from "../Header/Header";
 import { UrlContext } from "../../Context/UrlContext";
 import ReactPlayer from "react-player";
 import VideoSnapshot from 'video-snapshot';
 import * as tf from "@tensorflow/tfjs"
-import JSZip from "jszip";
-import { string } from "@tensorflow/tfjs";
+import Info from "../Info/Info";
 
 const ContentsWrapper = styled.div`
     display: inline-flex;
-    height: 410px;
+    height: 420px;
     width: 100%;
     border: 2px solid black;
     background: white;
@@ -46,7 +44,13 @@ const StyledCanvas = styled.canvas`
     float:left;
     margin 0.6% 2%;
     position: absolute;
-    display: none;
+    display:none;
+`
+
+const ShowCanvas = styled.canvas`
+    float:left;
+    margin 0.6% 2%;
+    position: absolute;
 `
 //display: none;
 
@@ -56,44 +60,121 @@ const ModelUrl = "tfjs_model/model.json"
 
 function Article() {
     const { UrlData, SetUrlData} = useContext(UrlContext);
-    const [ Blub, SetBlub] = useState();
     const result = [];
     const result_ref = useRef([]);
-    const video_ref = useRef();
+    const show_ref = useRef();
     const canvasRef = useRef([]);   
     let model;
     let tensor;
-
+    let ImgNum;
     let vwidth =0;
     let vheight =0;
+    let boxarrayes = []
+    
     useEffect(()=>{
-        UrlData != "" ? SetBlub(URL.createObjectURL(UrlData)) : SetBlub(Blub);
-        console.log(UrlData, Blub)
+        try {
+            for (let i = 1; i <= 16; i++) {
+                //console.log(currentTime, i-1)
+                //const previewSrc = await snapshoter.takeSnapshot(currentTime);
+                //result_ref.current[i-1].src = previewSrc;
+                result_ref.current[i-1].src = URL.createObjectURL(UrlData[i-1])
+
+                result_ref.current[i-1].onload  = function(){
+                    
+                    var img = new Image();
+                    img.src = result_ref.current[i-1].src;
+                    img.onload = function()
+                    {
+                        vwidth = this.width;
+                        vheight = this. height;
+                        canvasRef.current[i-1].width = this.width;
+                        canvasRef.current[i-1].height =  this.height;
+                        //console.log("Width: "+this.width+" Height: "+this.height);
+                        const ctx = canvasRef.current[i-1].getContext("2d");
+                        ctx.drawImage(img, 0, 0);
+                    }
+                    
+                    img.remove();
+                }
+                console.log(canvasRef.current[i-1].height, canvasRef.current[i-1].width)
+              }
+            
+        } catch (error) {
+         console.log(error.message)   
+        }
     },[UrlData]);
+
 
     function showProgress(percent) {
         var pct = Math.floor(percent*100.0);
         console.log(`${pct}% loaded`)
     }
-    function canvas_download(props){
-        console.log(props + "canvas_downloading..")
-        var canvas = canvasRef.current[props];
+    function canvas_download(){
+        console.log(ImgNum-1+ "canvas_downloading..")
+        var canvas = canvasRef.current[ImgNum-1];
         var url = canvas.toDataURL("image/png");
         var link = document.createElement('a');
         link.download = 'detected.jpg';
         link.href = url;
         link.click();
       }
-    function img_download(props){
-        console.log(props + "img_downloading..")
+    function img_download(){
+        console.log(ImgNum-1 + "img_downloading..")
         var link = document.createElement('a');
         link.download = 'filename.jpg';
-        link.href = result_ref.current[props].src;
+        link.href = result_ref.current[ImgNum-1].src;
         link.click();
       }
     function Img(props){
         function check(){
-            console.log(props.k)
+            //SetImgNum(props.k);
+            console.log(props.k);
+            ImgNum = props.k;
+            console.log(ImgNum);
+            var img = new Image();
+            img.src = result_ref.current[ImgNum-1].src;
+            img.onload = function()
+            {
+                vwidth = this.width;
+                vheight = this. height;
+                show_ref.current.width = this.width;
+                show_ref.current.height =  this.height;
+                //console.log("Width: "+this.width+" Height: "+this.height);
+                const ctx = show_ref.current.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+                if(boxarrayes.length != 0){
+                    console.log("gigogo")
+                    boxarrayes[ImgNum-1].forEach(prediction => {
+        
+                        // Extract boxes and classes
+                        const [node, score, cls] = prediction; 
+                        const x= show_ref.current.width * node[1];
+                        const y=show_ref.current.height * node[0];
+                        const width = show_ref.current.width * (node[3]-node[1]);
+                        const height = show_ref.current.height * (node[2]-node[0])
+        
+                        const text = Math.floor(score*100); 
+                        console.log(x,y,width,height)
+                        // Set styling
+                        const color = Math.floor(Math.random()*16777215).toString(16);
+                        ctx.strokeStyle = '#' + color
+                        ctx.font = '20px Arial';
+                        console.log(ctx.lineWidth)
+                        ctx.lineWidth = 4;
+                        // Draw rectangles and text
+                        ctx.beginPath();   
+                        ctx.fillStyle = '#' + color
+                        ctx.fillText(text, x, y);
+                        ctx.rect(x, y, width, height); 
+                        ctx.stroke();
+                    });
+            }
+            
+            img.remove();
+            console.log(boxarrayes)
+            
+            }
+            
         }
         return(
             <>
@@ -103,10 +184,11 @@ function Article() {
         );
     }
     async function Predict(){
+        boxarrayes = []
         console.log( "Loading model..." );
         model = await tf.loadGraphModel(ModelUrl, {onProgress: showProgress});
         console.log( "Model loaded.");
-        for(let k=0;k<1;k++){
+        for(let k=0;k<16;k++){
             let box_array =[]
             let bboxes =[]
             let newArray;
@@ -148,7 +230,7 @@ function Article() {
             let predictions = await arrays;
             const objectnum = predictions[5];
             for(let i=0;i<objectnum;i++){
-                if(predictions[4][0][i]<0.1 || predictions[2][0][i]==2){
+                if(predictions[4][0][i]<0.4 || predictions[2][0][i]==2){
                     continue;
                 } 
                 let box =[];
@@ -169,6 +251,7 @@ function Article() {
                 bbox.push(Math.floor(predictions[4][0][i]*100))
                 bboxes.push(bbox)
             }
+            boxarrayes.push(box_array)
             console.log(box_array, bboxes)
             // x,y,width,height
             // x = 
@@ -200,15 +283,12 @@ function Article() {
 
     const Getimg = async () => {
         try {
-            const frameRate = 1/8;
-            const snapshoter = new VideoSnapshot(UrlData);
-            var currentTime = video_ref.current.getCurrentTime();
             for (let i = 1; i <= 16; i++) {
                 //console.log(currentTime, i-1)
                 //const previewSrc = await snapshoter.takeSnapshot(currentTime);
 
                 //result_ref.current[i-1].src = previewSrc;
-                result_ref.current[i-1].src = ("./predict/"+i+".jpg");
+                result_ref.current[i-1].src = URL.createObjectURL(UrlData[i-1])
 
                 result_ref.current[i-1].onload  = function(){
                     
@@ -228,36 +308,11 @@ function Article() {
                     img.remove();
                 }
                 console.log(canvasRef.current[i-1].height, canvasRef.current[i-1].width)
-                currentTime += frameRate;
               }
-              alert("사진 캡처가 완료되었습니다.");
             
         } catch (error) {
          alert(error.message)   
         }
-    }
-    const Download = () =>{
-        /*let zip = new JSZip();
-        for(let i=0;i<1;i++){
-            zip.folder("original").file(i+"_preview.jpg",result_ref.current[i-1])
-        }
-
-        zip.generateAsync({type: 'blob'})
-		.then((resZip) => {
-			const link = document.createElement('a');
-            link.href = URL.createObjectURL(resZip);
-            link.download = `preview.zip`;
-            document.body.appendChild(link);
-            link.click();
-            URL.revokeObjectURL(link.href)
-            
-		})
-		.catch((error) => {
-			console.log(error);
-		});*/
-        canvas_download(0);
-        img_download(0);
-        
     }
 
     const rendering = () => {
@@ -268,19 +323,18 @@ function Article() {
       };
     return (
       <>
-      <Header Getimg={Getimg} Predict={Predict} Download={Download}/>
+      <Header Getimg={Getimg} Predict={Predict} Download={img_download} Predict_Download={canvas_download} />
       <ContentsWrapper>
         <ImgWrapper>
             {rendering()}
         </ImgWrapper>
         <VideoWrapper>
-            <ReactPlayer ref = {video_ref} url={Blub} width="100%" height="100%" controls={true} />
+            <ShowCanvas ref = {show_ref}></ShowCanvas>
         </VideoWrapper>
        
 
        </ContentsWrapper>
         <Info/>
-        
       </>
     
   );
