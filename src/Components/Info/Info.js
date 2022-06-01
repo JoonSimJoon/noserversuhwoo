@@ -1,13 +1,10 @@
-import React,{ useContext, useEffect, useState } from "react";
+import React,{useEffect, useState } from "react";
 import styled from "styled-components";
 import Infofile from "../../json/Info.json"
-import { UrlContext } from "../../Context/UrlContext";
 
 const Wrapper = styled.div`
   width : 100%;
   height: 360px;
-  border-radius: 0.25rem;
-  border: 2px solid black;
 `;
 
 const InfoWrapper = styled.div`
@@ -24,39 +21,48 @@ const StyledLi = styled.li`
 
 `;
 
-function List(props){
+function Info(props) {
+  const [ImgNum, SetImgNum] = useState(props.ImgNum)
+  const [Data,SetData]= useState(props.Data);
+  const data = ["작물 종류", "상추잎 수량", "최대 크기", 
+  "최소 크기", "평균 크기", "추수 여부"];
   
-  const { UrlData, SetUrlData} = useContext(UrlContext);
-  const data = ["작물 종류", "재배 시작", "깻잎 수량", "최대 크기", 
-    "최소 크기", "평균 크기", "추수 여부"];
-  useEffect(() =>  {
-    console.log(Infofile)
-  }, [])
+  useEffect(()=>{
+    SetData(props.Data);
+  },[props.Data])
+  useEffect(()=>{
+    SetImgNum(props.ImgNum);
+    console.log(Data,ImgNum)
+  },[props.ImgNum])
 
+  function check(){
+    console.log(Data,ImgNum)
+    
+  }
 
-  //console.log(InfoData && InfoData[2])
   const Loading = () => {
     const result=[];
+    result.push(
+      <StyledLi key={0}>
+        <div>{ImgNum}</div>
+      </StyledLi>
+
+    )
     for (let i = 0; i < data.length; i++) {
-         result.push(<StyledLi key={i+1}>
+        result.push(<StyledLi key={i+1}>
           <div>{Infofile[data[i]]}</div>           
-        </StyledLi>)
+        </StyledLi>
+        )
     }
     return result;
   };
-  return(
-    <StyledUl>
-      {Loading()}
-    </StyledUl>
-  )
-}
-
-
-function Info() {
   return (
     <Wrapper>
       <InfoWrapper>
-        <List></List>
+        
+      <StyledUl>
+        {Loading()}
+      </StyledUl>
       </InfoWrapper>
     </Wrapper>
   );

@@ -2,14 +2,12 @@ import React,{ useContext,useEffect, useState, useRef, useReducer} from "react";
 import styled from "styled-components";
 import Header from "../Header/Header";
 import { UrlContext } from "../../Context/UrlContext";
-import ReactPlayer from "react-player";
-import VideoSnapshot from 'video-snapshot';
 import * as tf from "@tensorflow/tfjs"
-import Info from "../Info/Info";
+import Info from "../Info/Info"
 
 const ContentsWrapper = styled.div`
     display: inline-flex;
-    height: 420px;
+    height: 770px;
     width: 100%;
     border: 2px solid black;
     background: white;
@@ -18,7 +16,7 @@ const ContentsWrapper = styled.div`
 `
 
 const ImgWrapper = styled.div`
-    width: 60%;
+    width: 80%;
     margin: 0.3%;
     border: 2px solid black;
     overflow:hidden;
@@ -26,8 +24,8 @@ const ImgWrapper = styled.div`
     margin-left:10px;
 `
 
-const VideoWrapper = styled.div`
-    width: 40%;
+const InfoWrapper = styled.div`
+    width: 20%;
     margin: 0.3%;
     border: 2px solid black;
 `
@@ -46,31 +44,25 @@ const StyledCanvas = styled.canvas`
     position: absolute;
     display:none;
 `
-
-const ShowCanvas = styled.canvas`
-    float:left;
-    margin 0.6% 2%;
-    height: 90%; 
-    width: auto;
-`
 //display: none;
 
-const ModelUrl = "tfjs_model/model.json"
+const ModelUrl = "./tfjs_model/model.json"
 //const ModelUrl = "https://tensorflowjsrealtimemodel.s3.au-syd.cloud-object-storage.appdomain.cloud/model.json"
 //const ModelUrl = "./tfjs_tiny/model.json"
 
 function Article() {
     const { UrlData, SetUrlData} = useContext(UrlContext);
+    const [ImgNum , SetImgNum] = useState();
     const result = [];
     const result_ref = useRef([]);
-    const show_ref = useRef();
     const canvasRef = useRef([]);   
     let model;
     let tensor;
-    let ImgNum;
+    //let ImgNum;
     let vwidth =0;
     let vheight =0;
     let boxarrayes = []
+    let converted_boxarrayes = []
     
     useEffect(()=>{
         try {
@@ -97,7 +89,7 @@ function Article() {
                     
                     img.remove();
                 }
-                console.log(canvasRef.current[i-1].height, canvasRef.current[i-1].width)
+               // console.log(canvasRef.current[i-1].height, canvasRef.current[i-1].width)
               }
             
         } catch (error) {
@@ -126,52 +118,25 @@ function Article() {
         link.href = result_ref.current[ImgNum-1].src;
         link.click();
       }
+      function scaleIt(source,scaleFactor){
+        var c=document.createElement('canvas');
+        var ctx=c.getContext('2d');
+        var w=source.width*scaleFactor;
+        var h=source.height*scaleFactor;
+        c.width=w;
+        c.height=h;
+        ctx.drawImage(source,0,0,w,h);
+        return(c);
+      }
     function Img(props){
         function check(){
-            //SetImgNum(props.k);
-            console.log(props.k);
-            ImgNum = props.k;
-            console.log(ImgNum);
-            var img = new Image();
-            img.src = result_ref.current[ImgNum-1].src;
-            img.onload = function()
-            {
-               
-                //console.log("Width: "+this.width+" Height: "+this.height);
-                const ctx = show_ref.current.getContext("2d");
-                ctx.drawImage(img, 0, 0);
-                if(boxarrayes.length != 0){
-                    console.log("gigogo")
-                    boxarrayes[ImgNum-1].forEach(prediction => {
-        
-                        // Extract boxes and classes
-                        const [node, score, cls] = prediction; 
-                        const x= show_ref.current.width * node[1];
-                        const y=show_ref.current.height * node[0];
-                        const width = show_ref.current.width * (node[3]-node[1]);
-                        const height = show_ref.current.height * (node[2]-node[0])
-        
-                        const text = Math.floor(score*100); 
-                        console.log(x,y,width,height)
-                        // Set styling
-                        const color = Math.floor(Math.random()*16777215).toString(16);
-                        ctx.strokeStyle = '#' + color
-                        ctx.font = '20px Arial';
-                        console.log(ctx.lineWidth)
-                        ctx.lineWidth = 4;
-                        // Draw rectangles and text
-                        ctx.beginPath();   
-                        ctx.fillStyle = '#' + color
-                        ctx.fillText(text, x, y);
-                        ctx.rect(x, y, width, height); 
-                        ctx.stroke();
-                    });
-            }
+            SetImgNum(props.k);
+            //console.log(props.k);
+            //ImgNum = props.k;
+            //console.log(ImgNum);
             
-            img.remove();
-            console.log(boxarrayes)
+            //console.log(boxarrayes,converted_boxarrayes)
             
-            }
             
         }
         return(
@@ -185,17 +150,13 @@ function Article() {
         boxarrayes = []
         console.log( "Loading model..." );
         model = await tf.loadGraphModel(ModelUrl, {onProgress: showProgress});
-        console.log( "Model loaded.");
+        alert("인공지능 모델 불러오기 완료");
         for(let k=0;k<16;k++){
             let box_array =[]
             let bboxes =[]
             let newArray;
             console.log("Loading IMG...")
-            
-
-
             result_ref.current[k].onload  = function(){
-                    
                 var img = new Image();
                 img.src = result_ref.current[k].src;
                 img.onload = function()
@@ -228,7 +189,7 @@ function Article() {
             let predictions = await arrays;
             const objectnum = predictions[5];
             for(let i=0;i<objectnum;i++){
-                if(predictions[4][0][i]<0.4){
+                if(predictions[4][0][i]<0.2){
                     continue;
                 } 
                 let box =[];
@@ -251,7 +212,8 @@ function Article() {
                 bboxes.push(bbox)
             }
             boxarrayes.push(box_array)
-            console.log(box_array, bboxes)
+            converted_boxarrayes.push(bboxes)
+            //console.log(box_array, bboxes)
             // x,y,width,height
             // x = 
             canvasRef.current[k].src = result_ref.current[k].src;
@@ -263,13 +225,15 @@ function Article() {
                 // Extract boxes and classes
                 const [x, y, width, height, score, object] = prediction; 
                 const text = String(score) + String(object); 
-            
+                if(object == 1){
+                    return;
+                } 
                 // Set styling
                 const color = Math.floor(Math.random()*16777215).toString(16);
                 ctx.strokeStyle = '#' + color
                 ctx.font = '40px Arial';
-                console.log(ctx.lineWidth)
-                ctx.lineWidth = 5;
+                //console.log(ctx.lineWidth)
+                ctx.lineWidth = 15;
                 // Draw rectangles and text
                 ctx.beginPath();   
                 ctx.fillStyle = '#' + color
@@ -277,6 +241,10 @@ function Article() {
                 ctx.rect(x, y, width, height); 
                 ctx.stroke();
             });
+            //var url = canvasRef.current[k].toDataURL("image/png")
+            canvasRef.current[k].toBlob(blob => {
+                result_ref.current[k].src = URL.createObjectURL(blob);
+            })
         }
         alert("사진 분석이 완료되었습니다.");
         
@@ -303,12 +271,12 @@ function Article() {
                         canvasRef.current[i-1].height =  this.height;
                         //console.log("Width: "+this.width+" Height: "+this.height);
                         const ctx = canvasRef.current[i-1].getContext("2d");
-                        ctx.drawImage(img, 0, 0);
+                        ctx.drawImage(img, 0, 0,100,100);
                     }
                     
                     img.remove();
                 }
-                console.log(canvasRef.current[i-1].height, canvasRef.current[i-1].width)
+                //console.log(canvasRef.current[i-1].height, canvasRef.current[i-1].width)
               }
             
         } catch (error) {
@@ -329,13 +297,12 @@ function Article() {
         <ImgWrapper>
             {rendering()}
         </ImgWrapper>
-        <VideoWrapper>
-            <ShowCanvas ref = {show_ref}></ShowCanvas>
-        </VideoWrapper>
-       
+        <InfoWrapper>
+            <Info ImgNum = {ImgNum} Data = {boxarrayes}/>
+            asd
+        </InfoWrapper>
 
        </ContentsWrapper>
-        <Info/>
       </>
     
   );
