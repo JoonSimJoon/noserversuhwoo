@@ -5,6 +5,7 @@ import { UrlContext } from "../../Context/UrlContext";
 import { DataContext } from "../../Context/DataContect";
 import * as tf from "@tensorflow/tfjs"
 import Info from "../Info/Info"
+import { type } from "@testing-library/user-event/dist/type";
 
 
 const ContentsWrapper = styled.div`
@@ -52,16 +53,19 @@ const ModelUrl = "./tfjs_model/model.json"
 //const ModelUrl = "https://tensorflowjsrealtimemodel.s3.au-syd.cloud-object-storage.appdomain.cloud/model.json"
 //const ModelUrl = "./tfjs_tiny/model.json"
 
+
 function Article() {
     const { UrlData, SetUrlData} = useContext(UrlContext);
     const { Data, SetData} = useContext(DataContext);
     //const [ImgNum,SetImgNum] = useState("0")
     const result = [];
     const result_ref = useRef([]);
-    const canvasRef = useRef([]);   
+    const canvasRef = useRef([]);
+    const InfoRef = useRef();   
+    let ImgNum = 0;
+
     let model;
     let tensor;
-    let ImgNum;
     let vwidth =0;
     let vheight =0;
     let boxarrayes = []
@@ -134,16 +138,11 @@ function Article() {
     function Img(props){
         function check(){
             ImgNum = props.k;
-            var newdata = Data;
-            newdata.num  = props.k
-
-            SetData(newdata);
+            //SetImg
             //console.log(props.k);
             //console.log(ImgNum);
-            
+            InfoRef.current.Num_set(ImgNum);
             //console.log(boxarrayes,converted_boxarrayes)
-            
-            
         }
         return(
             <>
@@ -253,9 +252,8 @@ function Article() {
             })
         }
         alert("사진 분석이 완료되었습니다.");
-        var newdata = Data
-        newdata.jsondata = boxarrayes
-        SetData(newdata)
+        console.log(typeof(boxarrayes))
+        InfoRef.current.Data_set(boxarrayes);
     }
 
     const Getimg = async () => {
@@ -298,6 +296,7 @@ function Article() {
         }
         return result;
       };
+      
     return (
       <>
       <Header Getimg={Getimg} Predict={Predict} Download={img_download} Predict_Download={canvas_download} />
@@ -306,8 +305,8 @@ function Article() {
             {rendering()}
         </ImgWrapper>
         <InfoWrapper>
-            <Info/>
-            asd
+            <Info ref = {InfoRef}/>
+            
         </InfoWrapper>
 
        </ContentsWrapper>

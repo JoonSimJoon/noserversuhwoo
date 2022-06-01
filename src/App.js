@@ -8,7 +8,7 @@ import {DataContext} from "./Context/DataContect"
 
 function App(props) {
   const [ UrlData, SetUrlData ] = useState("")
-  const [Data,SetData] = useState({num: 0 , jsondata:[]})
+  const [Data,SetData] = useState([])
   return (
     <DataContext.Provider value={{Data, SetData}}>
      <UrlContext.Provider value={{UrlData , SetUrlData}}>
