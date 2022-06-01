@@ -2,8 +2,10 @@ import React,{ useContext,useEffect, useState, useRef, useReducer} from "react";
 import styled from "styled-components";
 import Header from "../Header/Header";
 import { UrlContext } from "../../Context/UrlContext";
+import { DataContext } from "../../Context/DataContect";
 import * as tf from "@tensorflow/tfjs"
 import Info from "../Info/Info"
+
 
 const ContentsWrapper = styled.div`
     display: inline-flex;
@@ -52,13 +54,14 @@ const ModelUrl = "./tfjs_model/model.json"
 
 function Article() {
     const { UrlData, SetUrlData} = useContext(UrlContext);
-    const [ImgNum , SetImgNum] = useState();
+    const { Data, SetData} = useContext(DataContext);
+    //const [ImgNum,SetImgNum] = useState("0")
     const result = [];
     const result_ref = useRef([]);
     const canvasRef = useRef([]);   
     let model;
     let tensor;
-    //let ImgNum;
+    let ImgNum;
     let vwidth =0;
     let vheight =0;
     let boxarrayes = []
@@ -130,9 +133,12 @@ function Article() {
       }
     function Img(props){
         function check(){
-            SetImgNum(props.k);
+            ImgNum = props.k;
+            var newdata = Data;
+            newdata.num  = props.k
+
+            SetData(newdata);
             //console.log(props.k);
-            //ImgNum = props.k;
             //console.log(ImgNum);
             
             //console.log(boxarrayes,converted_boxarrayes)
@@ -247,7 +253,9 @@ function Article() {
             })
         }
         alert("사진 분석이 완료되었습니다.");
-        
+        var newdata = Data
+        newdata.jsondata = boxarrayes
+        SetData(newdata)
     }
 
     const Getimg = async () => {
@@ -298,7 +306,7 @@ function Article() {
             {rendering()}
         </ImgWrapper>
         <InfoWrapper>
-            <Info ImgNum = {ImgNum} Data = {boxarrayes}/>
+            <Info/>
             asd
         </InfoWrapper>
 
