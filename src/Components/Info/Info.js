@@ -110,8 +110,8 @@ const Info =  forwardRef((props, ref) =>  {
                     boxobject.h_bx = ((bbox[3]-bbox[1])*100).toFixed(2);
                     boxobject.w_bx = ((bbox[2]-bbox[0])*100).toFixed(2);
                 }
-                boxobject.w_px = (198/parseFloat(boxobject.w_bx)).toFixed(2);
-                boxobject.h_px = (429/parseFloat(boxobject.h_bx)).toFixed(2);
+                boxobject.w_px = (150/parseFloat(boxobject.w_bx)).toFixed(2);
+                boxobject.h_px = (325/parseFloat(boxobject.h_bx)).toFixed(2);
                 boxobject.d_px = Math.hypot(boxobject.w_px,boxobject.h_px).toFixed(2);
             }else{
                 var data = new Object();

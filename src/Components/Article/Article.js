@@ -151,13 +151,7 @@ function Article() {
         link.click();
         InfoRef.current.Download(ImgNum-1)
       }
-    function img_download(){
-        console.log(ImgNum-1 + "img_downloading..")
-        var link = document.createElement('a');
-        link.download = 'filename.jpg';
-        link.href = result_ref.current[ImgNum-1].src;
-        link.click();
-      }
+    
     function Img(props){
         function check(){
             ImgNum = props.k;
@@ -350,7 +344,7 @@ function Article() {
       
     return (
       <>
-      <Header Show={Show} Getimg={Getimg} Predict={Predict} Download={img_download} Predict_Download={canvas_download} />
+      <Header Show={Show} Getimg={Getimg} Predict={Predict} Predict_Download={canvas_download} />
       <ContentsWrapper>
         <ImgWrapper>
             {rendering()}

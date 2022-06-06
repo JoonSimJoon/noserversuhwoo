@@ -52,10 +52,9 @@ function Header(props) {
   const { UrlData, SetUrlData} = useContext(UrlContext);
   const inputFile = useRef(null)
   async function Connection (){
-    
     await inputFile.current.click();
     //await props.Getimg();
-   
+    
   }
 
 
@@ -64,11 +63,6 @@ function Header(props) {
     props.Predict();
 
   }
-  
-  const Download = () => {
-    props.Download();
-  }
-
   const Predict_Download = () => {
     props.Predict_Download();
   }
@@ -105,12 +99,6 @@ function Header(props) {
             </StyledDiv>
             
             <Line/>
-            <StyledDiv onClick = {Download}
-            onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/save_on.png')}
-            onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/save.png')}>
-              <Styledimg  src = "img/basic_icon/save.png"/>
-              원본저장
-            </StyledDiv>
 
             <StyledDiv onClick = {Predict_Download}
             onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/save_on.png')}
@@ -119,15 +107,7 @@ function Header(props) {
               분석저장
             </StyledDiv>
 
-            <Line/>
-            <Link to="/settings">
-              <StyledDiv
-              onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/system_on.png')}
-              onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/system.png')}>
-                <Styledimg src = "img/basic_icon/system.png"/>
-                설정
-              </StyledDiv>
-            </Link>
+            
             
           </ButtonWrapper>
           <Logo src="img/icon.png" ></Logo>
