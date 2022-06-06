@@ -5,7 +5,6 @@ import { UrlContext } from "../../Context/UrlContext";
 import { DataContext } from "../../Context/DataContect";
 import * as tf from "@tensorflow/tfjs"
 import Info from "../Info/Info"
-import { type } from "@testing-library/user-event/dist/type";
 
 
 const ContentsWrapper = styled.div`
@@ -30,6 +29,18 @@ const ImgWrapper = styled.div`
 const InfoWrapper = styled.div`
     width: 20%;
     margin: 0.3%;
+`
+
+const InfoImg = styled.div`
+
+overflow: auto;
+text-align:center;
+    height: 49%;
+    margin-bottom: 2.3%;
+    border: 2px solid black;
+`
+const InfoData = styled.div`
+    height: 49%;
     border: 2px solid black;
 `
 
@@ -41,6 +52,8 @@ const StyledImg = styled.img`
     border: 2px solid black;
     margin 0.6% 2%;
 `;
+
+
 const StyledCanvas = styled.canvas`
     float:left;
     margin 0.6% 2%;
@@ -48,6 +61,13 @@ const StyledCanvas = styled.canvas`
     display:none;
 `
 //display: none;
+
+const StyledPreview = styled.img`
+display:inline-block;
+    width:100%;
+    margin-top: 0.6%;
+`;
+
 
 const ModelUrl = "./tfjs_model/model.json"
 //const ModelUrl = "https://tensorflowjsrealtimemodel.s3.au-syd.cloud-object-storage.appdomain.cloud/model.json"
@@ -62,6 +82,7 @@ function Article() {
     const result_ref = useRef([]);
     const canvasRef = useRef([]);
     const InfoRef = useRef();   
+    const PreviewRef = useRef();
     let ImgNum = 0;
 
     let model;
@@ -104,19 +125,31 @@ function Article() {
         }
     },[UrlData]);
 
-
+    function Show(){
+        const Predict_start = new Date();
+        Predict_time();
+        InfoRef.current.Time_set((new Date() - Predict_start) / 1000 + 0.01);
+        InfoRef.current.Data_set(boxarrayes);
+        alert("사진 분석이 완료되었습니다.");
+    }
     function showProgress(percent) {
         var pct = Math.floor(percent*100.0);
         console.log(`${pct}% loaded`)
     }
     function canvas_download(){
+        let today = new Date();   
+
+        let year = today.getFullYear(); // 년도
+        let month = today.getMonth() + 1;  // 월
+        let date = today.getDate();  // 날짜
         console.log(ImgNum-1+ "canvas_downloading..")
         var canvas = canvasRef.current[ImgNum-1];
         var url = canvas.toDataURL("image/png");
         var link = document.createElement('a');
-        link.download = 'detected.jpg';
+        link.download = year+"/"+month+"/"+date+"/"+String(ImgNum) + '_detected.jpg';
         link.href = url;
         link.click();
+        InfoRef.current.Download(ImgNum-1)
       }
     function img_download(){
         console.log(ImgNum-1 + "img_downloading..")
@@ -125,23 +158,18 @@ function Article() {
         link.href = result_ref.current[ImgNum-1].src;
         link.click();
       }
-      function scaleIt(source,scaleFactor){
-        var c=document.createElement('canvas');
-        var ctx=c.getContext('2d');
-        var w=source.width*scaleFactor;
-        var h=source.height*scaleFactor;
-        c.width=w;
-        c.height=h;
-        ctx.drawImage(source,0,0,w,h);
-        return(c);
-      }
     function Img(props){
         function check(){
             ImgNum = props.k;
+            if(result_ref.current[ImgNum-1].src == "") return
             //SetImg
             //console.log(props.k);
             //console.log(ImgNum);
             InfoRef.current.Num_set(ImgNum);
+            canvasRef.current[ImgNum-1].toBlob(blob => {
+                PreviewRef.current.src = URL.createObjectURL(blob);
+                
+            })
             //console.log(boxarrayes,converted_boxarrayes)
         }
         return(
@@ -151,12 +179,37 @@ function Article() {
             </>
         );
     }
+    const Predict_time = async() =>{
+        async function bbox_blob(data){
+            if(result_ref.current[data].src == ""){
+                return;
+            }
+            //  canvasRef.current[data].toBlob(blob => {
+            //     result_ref.current[data].src = URL.createObjectURL(blob);
+                
+            // })
+            const progressdata = String(data+1) +"번째 사진 탐지완료"
+            //InfoRef.current.Progress_set(progressdata)
+        }
+        var range = [...Array(16)].map((v,i) => i);
+        const bboxPromises = range.map(async data =>{
+            return bbox_blob(data)
+        })
+        await Promise.all(bboxPromises)
+    }
+
     async function Predict(){
         boxarrayes = []
         console.log( "Loading model..." );
         model = await tf.loadGraphModel(ModelUrl, {onProgress: showProgress});
-        alert("인공지능 모델 불러오기 완료");
+        
+        
         for(let k=0;k<16;k++){
+            if(result_ref.current[k].src == ""){
+                break;
+            }
+            // const progressdata = String(k+1) +"번째 사진 탐지중"
+            // InfoRef.current.Progress_set(progressdata)
             let box_array =[]
             let bboxes =[]
             let newArray;
@@ -247,13 +300,11 @@ function Article() {
                 ctx.stroke();
             });
             //var url = canvasRef.current[k].toDataURL("image/png")
-            canvasRef.current[k].toBlob(blob => {
-                result_ref.current[k].src = URL.createObjectURL(blob);
-            })
+            
         }
-        alert("사진 분석이 완료되었습니다.");
-        console.log(typeof(boxarrayes))
-        InfoRef.current.Data_set(boxarrayes);
+        
+        alert("인공지능 모델 불러오기 완료");
+        
     }
 
     const Getimg = async () => {
@@ -299,13 +350,20 @@ function Article() {
       
     return (
       <>
-      <Header Getimg={Getimg} Predict={Predict} Download={img_download} Predict_Download={canvas_download} />
+      <Header Show={Show} Getimg={Getimg} Predict={Predict} Download={img_download} Predict_Download={canvas_download} />
       <ContentsWrapper>
         <ImgWrapper>
             {rendering()}
         </ImgWrapper>
         <InfoWrapper>
-            <Info ref = {InfoRef}/>
+            <InfoImg>
+            <StyledPreview ref={PreviewRef} alt= "미리보기 아직 설정하지않음"></StyledPreview>
+            </InfoImg>
+            <InfoData>
+                <Info ref = {InfoRef}/>
+            </InfoData>
+
+            
             
         </InfoWrapper>
 

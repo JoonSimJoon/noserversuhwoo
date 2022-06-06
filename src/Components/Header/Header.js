@@ -73,7 +73,9 @@ function Header(props) {
     props.Predict_Download();
   }
   
-
+  const Show = () =>{
+    props.Show();
+  }
 
     return (
       <>
@@ -89,6 +91,13 @@ function Header(props) {
             <input type='file' id='file' ref={inputFile} onChange={(event) => SetUrlData((event.target.files))} style={{display: 'none'}} accept="image/*" multiple/>
 
             <StyledDiv onClick = {Detect}
+            onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/analysis_on.png')}
+            onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/analysis.png')}>
+              <Styledimg  src = "img/basic_icon/analysis.png"/>
+              모델 불러오기
+            </StyledDiv>
+
+            <StyledDiv onClick = {Show}
             onMouseOver={e => (e.currentTarget.children[0].src = 'img/hover_icon/analysis_on.png')}
             onMouseOut={e => (e.currentTarget.children[0].src='img/basic_icon/analysis.png')}>
               <Styledimg  src = "img/basic_icon/analysis.png"/>

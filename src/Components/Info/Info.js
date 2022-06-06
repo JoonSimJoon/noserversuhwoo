@@ -3,7 +3,10 @@ import React,{useEffect, useContext, useState, forwardRef, useImperativeHandle }
 import styled from "styled-components";
 const Wrapper = styled.div`
   width : 100%;
-  height: 360px;
+  position : relative;
+
+
+  height: 100%;
 `;
 
 const InfoWrapper = styled.div`
@@ -21,16 +24,48 @@ const StyledLi = styled.li`
 
 `;
 
+const TableWrapper = styled.div`
+  position : absolute;
+  bottom:0;
+  padding-left: 3.5px;
+  padding-bottom: 7px;
+`
+
+
 const Info =  forwardRef((props, ref) =>  {
   const [ Data,SetData ] = useState([]);
   const [ImgNum,SetImgNum ] = useState("0");
   const [JsonData, SetJsonData] = useState({});
-  
+  const [ProgressData, SetProgressData] = useState("");
+  const [TimeData, SetTimeData] = useState(0)
   var JsonList = new Array();
-  var obj;
   const showdata = [ "최대 크기", 
   "최소 크기", "평균 크기", "추수 여부"];
   const dataname = ["max","min","avr"]
+  const ko = ["상추잎 수량"]
+  const DownloadJson = async (props) =>{
+    let today = new Date();   
+
+    let year = today.getFullYear(); // 년도
+    let month = today.getMonth() + 1;  // 월
+    let date = today.getDate();  // 날짜
+    const fileName = "_file";
+    var downjson = {}
+    downjson[showdata[0]] = JsonData[props][dataname[0]]
+    downjson[showdata[1]] = JsonData[props][dataname[1]]
+    downjson[showdata[2]] = JsonData[props][dataname[2]]
+    downjson[ko] = JsonData[props].num
+    console.log(downjson)
+    const json = JSON.stringify(downjson,null,2);
+    const blob = new Blob([json],{type:'application/json'});
+    const href = await URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = year+"/"+month+"/"+date+"/"+String(props+1)+fileName + ".json";
+    document.body.appendChild(link);
+    link.click();
+  }
+
   useImperativeHandle(ref, () => ({
     Num_set: (props) => {
       //console.log(props)
@@ -40,12 +75,22 @@ const Info =  forwardRef((props, ref) =>  {
       console.log(props)
       SetData(props)
       console.log(Data)
+    },
+    Progress_set: (props) =>{
+      console.log(props);
+      SetProgressData(props);
+    },
+    Time_set: (props) =>{
+      console.log(props);
+      SetTimeData(props)
+    },
+    Download: (props) =>{
+      DownloadJson(props);
     }
   }));
   
   useEffect(()=>{
     let idx=0;
-    console.log(1, typeof(Data),Data)
     Data.forEach(images => {
         var max_diagonal = -1;
         var min_diagonal = -1;
@@ -65,8 +110,8 @@ const Info =  forwardRef((props, ref) =>  {
                     boxobject.h_bx = ((bbox[3]-bbox[1])*100).toFixed(2);
                     boxobject.w_bx = ((bbox[2]-bbox[0])*100).toFixed(2);
                 }
-                boxobject.w_px = (180/parseFloat(boxobject.w_bx)).toFixed(2);
-                boxobject.h_px = (390/parseFloat(boxobject.h_bx)).toFixed(2);
+                boxobject.w_px = (198/parseFloat(boxobject.w_bx)).toFixed(2);
+                boxobject.h_px = (429/parseFloat(boxobject.h_bx)).toFixed(2);
                 boxobject.d_px = Math.hypot(boxobject.w_px,boxobject.h_px).toFixed(2);
             }else{
                 var data = new Object();
@@ -133,7 +178,7 @@ const Info =  forwardRef((props, ref) =>  {
   },[Data])
   
   function check(){
-    console.log(JsonList,JsonData)
+    console.log(JsonData)
   }
 
   const Loading = () => {
@@ -152,7 +197,7 @@ const Info =  forwardRef((props, ref) =>  {
       if(JsonData[ImgNum-1].num !=0 ){
 
         for (let i = 0; i < dataname.length; i++) {
-          result.push(<StyledLi key={i+1}>
+          result.push(<StyledLi key={i+2}>
             <div>{showdata[i]}: {JsonData[ImgNum-1][dataname[i]]}cm</div>           
           </StyledLi>
           )
@@ -164,6 +209,7 @@ const Info =  forwardRef((props, ref) =>  {
     return result;
   };
   return (
+    <>
     <Wrapper onClick={check}>
       <InfoWrapper>
         
@@ -171,7 +217,14 @@ const Info =  forwardRef((props, ref) =>  {
         {Loading()}
       </StyledUl>
       </InfoWrapper>
+    <TableWrapper>
+      {ProgressData}
+      <br/>
+      {TimeData}초 경과
+    </TableWrapper>
     </Wrapper>
+    </>
+    
   );
 });
 
