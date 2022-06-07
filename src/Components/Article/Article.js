@@ -199,6 +199,8 @@ function Article() {
         
         
         for(let k=0;k<16;k++){
+            let mxi = 0
+            let mni = 0
             if(result_ref.current[k].src == ""){
                 break;
             }
@@ -243,7 +245,7 @@ function Article() {
             for(let i=0;i<objectnum;i++){
                 if(predictions[4][0][i]<0.2){
                     continue;
-                } 
+                }
                 let box =[];
                 box.push(predictions[1][0][i]);
                 box.push(predictions[4][0][i]);
@@ -262,6 +264,15 @@ function Article() {
                 bbox.push(Math.floor(predictions[4][0][i]*100))
                 bbox.push(predictions[2][0][i])
                 bboxes.push(bbox)
+                if(predictions[2][0][i]!=1){
+                    if(mxi==0){
+                        mxi = bbox[2]*bbox[2] + bbox[3]*bbox[3]
+                        mni = bbox[2]*bbox[2] + bbox[3]*bbox[3]
+                    }else{
+                        if ( bbox[2]*bbox[2] + bbox[3]*bbox[3]> mxi) mxi = bbox[2]*bbox[2] + bbox[3]*bbox[3]
+                        if(bbox[2]*bbox[2] + bbox[3]*bbox[3]<mni) mni = bbox[2]*bbox[2] + bbox[3]*bbox[3]
+                    }
+                }
             }
             boxarrayes.push(box_array)
             converted_boxarrayes.push(bboxes)
@@ -281,14 +292,25 @@ function Article() {
                     return;
                 } 
                 // Set styling
-                const color = Math.floor(Math.random()*16777215).toString(16);
-                ctx.strokeStyle = '#' + color
+                if(mxi == width*width + height*height){
+                    ctx.strokeStyle = "fuchsia";
+                    ctx.fillStyle = "fuchsia"
+
+                }
+                else if(mni == width*width + height*height){
+                    ctx.strokeStyle = "blue";
+                    ctx.fillStyle = "blue"
+
+                }else{
+                    ctx.strokeStyle = "black";
+                    ctx.fillStyle = "black"
+                }
+
                 ctx.font = '40px Arial';
                 //console.log(ctx.lineWidth)
                 ctx.lineWidth = 15;
                 // Draw rectangles and text
                 ctx.beginPath();   
-                ctx.fillStyle = '#' + color
                 ctx.fillText(text, x, y);
                 ctx.rect(x, y, width, height); 
                 ctx.stroke();
