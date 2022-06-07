@@ -97,8 +97,7 @@ const Info =  forwardRef((props, ref) =>  {
         var avr_diagonal = parseFloat(0);
         var boxobject = new Object();
         var idxx=0;
-        images.forEach( element=>{
-          
+        images.forEach( element=>{ // width, height check
             const [bbox,score,cls] = element;
             if(cls==1){
                 //console.log(Math.floor((bbox[3]-bbox[1])*100),Math.floor((bbox[2]-bbox[0])*100),score,cls,idx);
@@ -110,8 +109,8 @@ const Info =  forwardRef((props, ref) =>  {
                     boxobject.h_bx = ((bbox[3]-bbox[1])*100).toFixed(2);
                     boxobject.w_bx = ((bbox[2]-bbox[0])*100).toFixed(2);
                 }
-                boxobject.w_px = (150/parseFloat(boxobject.w_bx)).toFixed(2);
-                boxobject.h_px = (325/parseFloat(boxobject.h_bx)).toFixed(2);
+                boxobject.w_px = (175/parseFloat(boxobject.w_bx)).toFixed(2);
+                boxobject.h_px = (388/parseFloat(boxobject.h_bx)).toFixed(2);
                 boxobject.d_px = Math.hypot(boxobject.w_px,boxobject.h_px).toFixed(2);
             }else{
                 var data = new Object();
@@ -122,26 +121,25 @@ const Info =  forwardRef((props, ref) =>  {
                     data.width = ((bbox[3]-bbox[1])*100).toFixed(2);
                     data.height = ((bbox[2]-bbox[0])*100).toFixed(2);
                 }
-                data.diagonal =Math.hypot(data.width,data.height).toFixed(2);
-                //console.log(data.width, data.height, (data.diagonal));
-                if(max_diagonal == -1){
-                    max_diagonal = data.diagonal;
+                // data.diagonal =data.width > data.height ? data.width : data.height;
+                // //console.log(data.width, data.height, (data.diagonal));
+                // if(max_diagonal == -1){
+                //     max_diagonal = data.diagonal;
   
-                }else if(max_diagonal<data.diagonal){
-                    max_diagonal = data.diagonal;
-                }
-                if(min_diagonal == -1){
-                    min_diagonal = data.diagonal;
+                // }else if(max_diagonal<data.diagonal){
+                //     max_diagonal = data.diagonal;
+                // }
+                // if(min_diagonal == -1){
+                //     min_diagonal = data.diagonal;
   
-                }else if(min_diagonal>data.diagonal){
-                    min_diagonal = data.diagonal;
-                }
-            }
-            if(cls==2){
+                // }else if(min_diagonal>data.diagonal){
+                //     min_diagonal = data.diagonal;
+                // }
+                // console.log(data.diagonal , data.width, data.height,max_diagonal,min_diagonal);
                 boxobject[idxx] = data;
-                avr_diagonal+=parseFloat( data.diagonal);
+                // avr_diagonal+=parseFloat( data.diagonal);
                 idxx+=1
-            } 
+            }
         });
         //console.log(boxobject)
         boxobject.max = max_diagonal;
@@ -161,13 +159,24 @@ const Info =  forwardRef((props, ref) =>  {
       for( let i=0;i<n;i++){
           obj[i].width =(obj[i].width *  obj.w_px/10).toFixed(2);
           obj[i].height = (obj[i].height * obj.h_px/10).toFixed(2);
-          obj[i].diagonal =(obj[i].diagonal* obj.d_px/10).toFixed(2);
+          obj[i].standard =(parseFloat(obj[i].width) > parseFloat(obj[i].height) ? parseFloat(obj[i].width) : parseFloat(obj[i].height)).toFixed(2);
           
+          if(i==0){
+            obj.avr = 0
+            obj.max = obj[i].standard;
+            obj.min = obj[i].standard
+          }else{
+            if(parseFloat(obj.max)<parseFloat(obj[i].standard)) obj.max = obj[i].standard
+            if(parseFloat(obj.min)>parseFloat(obj[i].standard)) obj.min = obj[i].standard
+          }
+
+          obj.avr = (parseFloat(obj.avr) + parseFloat(obj[i].standard)).toFixed(2)
       }
-      //console.log(obj[0])
-      obj.max = (obj.max*obj.d_px/10).toFixed(2);
-      obj.min = (obj.min*obj.d_px/10).toFixed(2);
-      obj.avr = (obj.avr*obj.d_px/10).toFixed(2);
+      obj.avr = (parseFloat(obj.avr)/n).toFixed(2);
+      console.log(obj)
+      // obj.max = (obj.max*obj.d_px/10).toFixed(2);
+      // obj.min = (obj.min*obj.d_px/10).toFixed(2);
+     
       
   })
     JsonList.reduce(function(target, key, index) {
