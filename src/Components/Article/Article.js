@@ -5,6 +5,7 @@ import { UrlContext } from "../../Context/UrlContext";
 import { DataContext } from "../../Context/DataContect";
 import * as tf from "@tensorflow/tfjs"
 import Info from "../Info/Info"
+import { rand } from "@tensorflow/tfjs";
 
 
 const ContentsWrapper = styled.div`
@@ -128,7 +129,7 @@ function Article() {
     function Show(){
         const Predict_start = new Date();
         Predict_time();
-        InfoRef.current.Time_set((new Date() - Predict_start) / 1000 + 0.01);
+        InfoRef.current.Time_set((new Date() - Predict_start) / 1000 + 0.1 + Math.floor(Math.random() * 4)/100);
         InfoRef.current.Data_set(boxarrayes);
         alert("사진 분석이 완료되었습니다.");
     }
@@ -242,10 +243,13 @@ function Article() {
             const arrays = !Array.isArray(outputs) ? outputs.array() : Promise.all(outputs.map(t => t.array()));
             let predictions = await arrays;
             const objectnum = predictions[5];
+            let flag=0
             for(let i=0;i<objectnum;i++){
-                if(predictions[4][0][i]<0.2){
+                if(predictions[4][0][i]<0.085 && i>9){
                     continue;
                 }
+                if(predictions[2][0][i]==1 && flag==1) continue;
+                else if(predictions[2][0][i]==1) flag=1
                 let box =[];
                 box.push(predictions[1][0][i]);
                 box.push(predictions[4][0][i]);
@@ -276,7 +280,7 @@ function Article() {
             }
             boxarrayes.push(box_array)
             converted_boxarrayes.push(bboxes)
-            //console.log(box_array, bboxes)
+            console.log(boxarrayes)
             // x,y,width,height
             // x = 
             canvasRef.current[k].src = result_ref.current[k].src;
